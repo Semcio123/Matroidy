@@ -1,0 +1,22 @@
+def inter(n):
+     l=['a','b']
+     for i in range(n):
+         l.append('t'+str(i))
+     print(l)
+     R=PolynomialRing(QQ,names=l)
+     g=R.gens()
+     R.inject_variables()
+     Qa=1
+     Qb=1
+     for i in range(n):
+         Qa=Qa*(a+g[i+2])
+         Qb=Qb*(b-g[i+2])
+     I=ideal(Qa,Qb)
+     for i in range(n):
+         I=I+g[i+2]^2
+     #print(I)
+     Q=QuotientRing(R,I)
+     for i in range(2*n):
+         for j in range (2*n-i):
+             print(Q(a^i*b^j).lift())
+             print()
