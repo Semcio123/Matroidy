@@ -1,0 +1,103 @@
+import time
+from itertools import chain, combinations
+
+def powerset(iterable):
+    s = list(iterable)
+    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+
+
+def get_matroid(n, k):
+	names = [str(i) for i in range(n)]
+	bases = powerset(names)
+	bases = [b for b in bases if len(b) == k]
+	ret = Matroid(bases)
+	return ret
+
+def rank(S,M):
+      r=0
+      B=M.bases()
+      n=len(B)
+      for i in range(n):
+          if r<len(B[i].intersection(S)):
+              r=len(B[i].intersection(S))
+      return r
+
+
+def Chi(M):
+       setup_start = time.time()
+    
+       n=len( M.groundset() )
+       l=[] # we define list of names
+       for i in range(n):
+             l.append('t'+str(i))
+       l.append('a')
+       l.append('b')
+       for i in range(n):
+             l.append('x'+str(i))
+       l.append('x')
+       l.append('y')
+       R=PolynomialRing(QQ,names=l)
+       E=M.groundset()
+       rm=len(M.basis() )
+       A=Subsets(E) #kosztowne
+       c=len(A)
+       g=R.gens()
+       chi=0
+       R.inject_variables()
+       
+       setup_end = time.time()
+       
+       pb_start = time.time()
+       
+       for i in range(c):
+             p=1
+             for j in range(n):# to trzeba sprawdzić
+                   if set(str(j)).intersection(A[i])==set():
+                         p=p*(b-g[j])
+                   else:
+                         p=p*(a+g[j])
+             r=rank(A[i],M)
+             c_s=len(A[i])
+             p=p*a^(n-rm-c_s+r)*(-b)^(c_s-r)
+             #print(A[i])
+             #print(factor(p))
+             chi=chi+p
+       pb_end = time.time()
+ # tutaj wstawić ******
+       ib_start = time.time()
+       print()
+       chi=chi/(a+b)
+       Qa=1 # this will be the first product
+       Qb=1 # another product
+       for i in range(n):
+              Qa=Qa*(a+g[i])
+       #print(factor(Qa))
+       for i in range(n):
+              Qb=Qb*(b-g[i])
+       #print(factor(Qb))
+       I=ideal(Qa,Qb)
+       for i in range(n):
+              I=I+ideal(g[i]^2)
+       #print(I)
+       Q=QuotientRing(R,I) # sorawdzic jak dlugo to dziala
+       #print(Q)
+       D=a*x+b*y
+       for i in range(n):
+              D=D-g[i]*(g[2*n+3]+g[n+2+i])
+       k=n+rm-1
+       ib_end = time.time()
+       mod_start = time.time()
+       ret = Q(D^k*chi)# i to tez sprawdzic
+       mod_end = time.time()
+       
+       setup_time = setup_end - setup_start
+       pb_time = pb_end - pb_start
+       ib_time = ib_end - ib_start
+       mod_time = mod_end - mod_start
+       total_time = mod_end - setup_start
+       
+       return ret, {"setup": setup_time, "pb": pb_time, "ib": ib_time, "mod": mod_time, "total": total_time}
+
+
+m = get_matroid(5,2)
+ret, times = Chi(m)
