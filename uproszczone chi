@@ -1,0 +1,69 @@
+
+
+def rank(S,M):
+      r=0
+      B=M.bases()
+      n=len(B)
+      for i in range(n):
+          if r<len(B[i].intersection(S)):
+              r=len(B[i].intersection(S))
+      return r
+
+
+def Chi(M):
+    
+       n=len( M.groundset() )
+       l=['a','b'] # we define list of names
+       for i in range(n):
+             l.append('t'+str(i))
+       l.append('x')
+       l.append('y')
+       R=PolynomialRing(QQ,names=l)
+       E=M.groundset()
+       rm=len(M.basis() )
+       A=Subsets(E) #kosztowne
+       c=len(A)
+       g=R.gens()
+       chi=0
+       R.inject_variables()
+       
+       
+       
+       for i in range(c):
+             p=1
+             for j in range(n):# to trzeba sprawdzić
+                   if set(str(j)).intersection(A[i])==set():
+                         p=p*(b-g[j+2])
+                   else:
+                         p=p*(a+g[j+2])
+             r=rank(A[i],M)
+             c_s=len(A[i])
+             p=p*a^(n-rm-c_s+r)*(-b)^(c_s-r)
+             #print(A[i])
+             #print(factor(p))
+             chi=chi+p
+       print()
+       chi=chi/(a+b)
+       Qa=1 # this will be the first product
+       Qb=1 # another product
+       for i in range(n):
+              Qa=Qa*(a+g[i+2])
+       #print(factor(Qa))
+       for i in range(n):
+              Qb=Qb*(b-g[i+2])
+       #print(factor(Qb))
+       I=ideal(Qa,Qb)
+       for i in range(n):
+              I=I+ideal(g[i+2]^2)
+       #print(I)
+       Q=QuotientRing(R,I) # sorawdzic jak dlugo to dziala
+       #print(Q)
+       D=a*x+b*y
+       for i in range(n):
+              D=D-g[i+2]*y
+       k=n+rm-1
+       return(lift(Q(chi*D^k)))
+       
+       
+
+
