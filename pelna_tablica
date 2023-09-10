@@ -16,10 +16,11 @@ def inter(n):
          I=I+g[i+2]^2
      #print(I)
      Q=QuotientRing(R,I)
-     T=[]
+     t=[]
      for i in (2,n+2):
-        T.append(g[i])
-     S=Subsets(T)
+        t.append(g[i])
+     S=Subsets(t)
      N=len(S)
+     T
      for i in range(N):
         for i in range(n)
