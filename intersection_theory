@@ -19,4 +19,4 @@ def inter(n):
      for i in range(2*n):
          for j in range (2*n-i):
              print(Q(a^i*b^j).lift())
-             print()
+             print() #a^2n neq 0, a^2n+1=0
