@@ -1,4 +1,4 @@
- def inter(n):
+def inter(n):
       l=['a','b']
       for i in range(n):
           l.append('t'+str(i))
