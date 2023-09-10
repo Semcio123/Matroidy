@@ -1,32 +1,38 @@
-def inter(n):
-     l=['a','b']
-     for i in range(n):
-         l.append('t'+str(i))
-     print(l)
-     R=PolynomialRing(QQ,names=l)
-     g=R.gens()
-     R.inject_variables()
-     Qa=1
-     Qb=1
-     for i in range(n):
-         Qa=Qa*(a+g[i+2])
-         Qb=Qb*(b-g[i+2])
-     I=ideal(Qa,Qb)
-     for i in range(n):
-         I=I+g[i+2]^2
-     #print(I)
-     Q=QuotientRing(R,I)
-     t=[]
-     for i in (2,n+2):
-        t.append(g[i])
-     S=Subsets(t)
-     N=len(S)
-     T=[]
-     for i in range(2*n+1):
-        T.append([None]*N)
-     for i in range(2*n+1):
-        p=a^i
-        for j in range(N):
-           for u in range(len(S[j])):
-              p=p*S[j][u]
-           T[i][j]=lift(Q(p))
+ def inter(n):
+      l=['a','b']
+      for i in range(n):
+          l.append('t'+str(i))
+      print(l)
+      R=PolynomialRing(QQ,names=l)
+      g=R.gens()
+      R.inject_variables()
+      Qa=1
+      Qb=1
+      for i in range(n):
+          Qa=Qa*(a+g[i+2])
+          Qb=Qb*(b-g[i+2])
+      I=ideal(Qa,Qb)
+      for i in range(n):
+          I=I+g[i+2]^2
+      #print(I)
+      Q=QuotientRing(R,I)
+      t=[]
+      for i in range(2,n+2):
+         t.append(g[i])
+      S=Subsets(t)
+      N=len(S)
+      T=[]
+      for i in range(2*n+1):
+         T.append([Q(0)]*N)
+      for i in range(2*n+1):
+         for j in range(N):
+             if 3*n-2-len(S[j])-i>-1:
+                p=a^i
+                for u in range(len(S[j])):
+                  p=p*S[j][u]
+                 # print(S[j][u])
+                p=p*b^(3*n-2-len(S[j])-i)
+                print(p)
+                print(lift(Q(p)))
+                T[i][j]=lift(Q(p))
+      return(T)
