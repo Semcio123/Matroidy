@@ -21,6 +21,12 @@ def inter(n):
         t.append(g[i])
      S=Subsets(t)
      N=len(S)
-     T
-     for i in range(N):
-        for i in range(n)
+     T=[]
+     for i in range(2*n+1):
+        T.append([None]*N)
+     for i in range(2*n+1):
+        p=a^i
+        for j in range(N):
+           for u in range(len(S[j])):
+              p=p*S[j][u]
+           T[i][j]=lift(Q(p))
