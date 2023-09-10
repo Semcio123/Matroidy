@@ -54,3 +54,4 @@ def Chi(M):
              chi=chi+p
        print()
        chi=chi/(a+b)
+       return(chi)
