@@ -1,14 +1,17 @@
+import time
+from itertools import chain, combinations
+
 def powerset(iterable):
     s = list(iterable)
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
 
 def get_matroid(n, k):
-	names = [str(i) for i in range(n)]
-	bases = powerset(names)
-	bases = [b for b in bases if len(b) == k]
-	ret = Matroid(bases)
-	return ret
+   names = [str(i) for i in range(n)]
+   bases = powerset(names)
+   bases = [b for b in bases if len(b) == k]
+   ret = Matroid(bases)
+   return ret
 
 def rank(S,M):
       r=0
