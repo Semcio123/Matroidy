@@ -1,0 +1,100 @@
+def powerset(iterable):
+    s = list(iterable)
+    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+
+
+def get_matroid(n, k):
+	names = [str(i) for i in range(n)]
+	bases = powerset(names)
+	bases = [b for b in bases if len(b) == k]
+	ret = Matroid(bases)
+	return ret
+
+def rank(S,M):
+      r=0
+      B=M.bases()
+      n=len(B)
+      for i in range(n):
+          if r<len(B[i].intersection(S)):
+              r=len(B[i].intersection(S))
+      return r
+
+
+def Chi(M):
+    
+       n=len( M.groundset() )
+       l=['a','b'] # we define list of names
+       for i in range(n):
+             l.append('t'+str(i))
+       l.append('x')
+       l.append('y')
+       R=PolynomialRing(QQ,names=l)
+       E=M.groundset()
+       rm=len(M.basis() )
+       A=Subsets(E) #kosztowne
+       c=len(A)
+       g=R.gens()
+       chi=0
+       R.inject_variables()
+       
+       
+       
+       for i in range(c):
+             p=1
+             for j in range(n):# to trzeba sprawdzić
+                   if set(str(j)).intersection(A[i])==set():
+                         p=p*(b-g[j+2])
+                   else:
+                         p=p*(a+g[j+2])
+             r=rank(A[i],M)
+             c_s=len(A[i])
+             p=p*a^(n-rm-c_s+r)*(-b)^(c_s-r)
+             #print(A[i])
+             #print(factor(p))
+             chi=chi+p
+       print()
+       chi=chi/(a+b)
+       D=a*x+b*y
+       for i in range(n):
+              D=D-g[i+2]*y
+       k=n+rm-1
+       return(chi*D^k)
+
+def inter(n):
+      l=['a','b']
+      for i in range(n):
+          l.append('t'+str(i))
+      print(l)
+      R=PolynomialRing(QQ,names=l)
+      g=R.gens()
+      R.inject_variables()
+      Qa=1
+      Qb=1
+      for i in range(n):
+          Qa=Qa*(a+g[i+2])
+          Qb=Qb*(b-g[i+2])
+      I=ideal(Qa,Qb)
+      for i in range(n):
+          I=I+g[i+2]^2
+      #print(I)
+      Q=QuotientRing(R,I)
+      t=[]
+      for i in range(2,n+2):
+         t.append(g[i])
+      S=Subsets(t)
+      N=len(S)
+      T=[]
+      for i in range(2*n+1):
+         T.append([Q(0)]*N)
+      for i in range(2*n+1):
+         for j in range(N):
+             if 3*n-2-len(S[j])-i>-1:
+                p=a^i
+                for u in range(len(S[j])):
+                  p=p*S[j][u]
+                 # print(S[j][u])
+                p=p*b^(3*n-2-len(S[j])-i)
+                print(p)
+                print(lift(Q(p)))
+                T[i][j]=lift(Q(p))
+      return(T)
