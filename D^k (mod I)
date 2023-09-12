@@ -70,10 +70,10 @@ def Chi(M):
            for j in range(le):
               p=p*S1[i][j]
            q=0
-           for k in range(w-le):
+           for k in range(w-le+1):
               s=(a*x)^k*(b*y)^(w-le-k)*(-y)^(le)*p*factorial(w)/(factorial(k)*factorial(w-le-k))
               D=D+s
-              print('for ',S1[i],'and',j, ' we get ', s )
+              print('for ',S1[i],'and a to',k, 'b to ',w-le-k, ' we get ', s )
        print(D)
        return(chi*D)
 
