@@ -75,6 +75,16 @@ def Chi(M):
               D=D+s
              # print('for ',S1[i],'and a to',k, 'b to ',w-le-k, ' we get ', s )
       # print(D)
+       Qa=1
+       Qb=1
+       for i in range(n):
+          Qa=Qa*(a+g[i+2])
+          Qb=Qb*(b-g[i+2])
+       I=ideal(Qa,Qb)
+       for i in range(n):
+          I=I+g[i+2]^2
+       #print(I)
+       Q=QuotientRing(R,I)
        return(lift(Q(chi)*Q(D)))
 
 def inter(n):
