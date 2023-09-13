@@ -75,7 +75,7 @@ def Chi(M):
               D=D+s
               print('for ',S1[i],'and a to',k, 'b to ',w-le-k, ' we get ', s )
        print(D)
-       return(chi*D)
+       return(lift(Q(chi)*Q(D)))
 
 def inter(n):
       l=['a','b']
