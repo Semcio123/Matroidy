@@ -36,6 +36,8 @@ def inter(n):
                 p=p*b^(3*n-2-len(S[j])-i)
                 print(p)
                 print(lift(Q(p)))
+                if lift(Q(p)).coefficients()!=[]:
+                    T[i][j]=lift(Q(p)).coefficients().[0]
                 T[i][j]=lift(Q(p))
                 U[i][j]=p
       return([T,U])
