@@ -73,8 +73,8 @@ def Chi(M):
            for k in range(w-le+1):
               s=(a*x)^k*(b*y)^(w-le-k)*(-y)^(le)*p*factorial(w)/(factorial(k)*factorial(w-le-k))
               D=D+s
-              print('for ',S1[i],'and a to',k, 'b to ',w-le-k, ' we get ', s )
-       print(D)
+             # print('for ',S1[i],'and a to',k, 'b to ',w-le-k, ' we get ', s )
+      # print(D)
        return(lift(Q(chi)*Q(D)))
 
 def inter(n):
