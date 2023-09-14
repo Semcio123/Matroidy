@@ -61,7 +61,6 @@ def inter(n):
                 T[i][j]=lift(Q(p))
       return(T)
 
-def reduction(f):
        
 
 
