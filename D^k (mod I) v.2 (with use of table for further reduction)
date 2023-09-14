@@ -46,8 +46,13 @@ def inter(n):
       S=Subsets(t)
       N=len(S)
       T=[]
+      U=[]
       for i in range(2*n+1):
          T.append([Q(0)]*N)
+      for i in range(2*n-1):
+         U.append([0]*N)
+      U.append([0]*(N-1))
+      U.append([0]*(N-n))
       for i in range(2*n+1):
          for j in range(N):
              if 3*n-2-len(S[j])-i>-1:
@@ -58,8 +63,10 @@ def inter(n):
                 p=p*b^(3*n-2-len(S[j])-i)
                 print(p)
                 print(lift(Q(p)))
-                T[i][j]=lift(Q(p))
-      return(T)
+                if lift(Q(p)).coefficients()!=[]:
+                   T[i][j]=(lift(Q(p)).coefficients())[0]
+                U[i][j]=p
+      return([T,U,N])
 
        
 
