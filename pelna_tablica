@@ -27,7 +27,7 @@ def inter(n):
          T.append([Q(0)]*N)
       for i in range(2*n-1):
          U.append([0]*N)
-      U.append([0]*(N-1)
+      U.append([0]*(N-1))
       U.append([0]*(N-n))
       for i in range(2*n+1):
          for j in range(N):
