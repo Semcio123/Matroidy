@@ -64,7 +64,6 @@ def Chi(M):
        #print()
        chi=chi/(a+b)
        chi=chi.numerator()#sage sees it as rational function, we are changing type to a polynomial
-       plainChi=chi
        Qa=1
        Qb=1
        for i in range(n):
@@ -99,7 +98,7 @@ def Chi(M):
        if Q(E^w)==Q(D):
           print("E^w=D")
 
-       return([lift(Q(D*chi)),plain_Chi,D])#you get list with modulo 
+       return([lift(Q(D*chi)),chi,D])#you get list with modulo 
 
 
 
