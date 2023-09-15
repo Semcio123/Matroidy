@@ -63,7 +63,8 @@ def Chi(M):
              chi=chi+p
        #print()
        chi=chi/(a+b)
-       chi=chi.numerator()
+       chi=chi.numerator()#sage sees it as rational function, we are changing type to a polynomial
+       plainChi=chi
        Qa=1
        Qb=1
        for i in range(n):
@@ -90,16 +91,15 @@ def Chi(M):
               s=(a*x)^k*(b*y)^(w-le-k)*(-y)^(le)*p*factorial(w)/(factorial(k)*factorial(w-le-k))
               D=D+s
               #print('for ',S1[i],'and a to',k, 'b to ',w-le-k, ' we get ', s )
-       print(D)
+       #print(D)
        E=g[0]*g[n+2]+g[1]*g[n+3]
        for i in range(n):
           E=E-g[2+i]*g[n+3]
-       print(E)
+       #print(E)
        if Q(E^w)==Q(D):
           print("E^w=D")
-       chi=chi.numerator()#chi is a polynomial, but sage sees it as a rational function(we divide by a+b at some point)
 
-       return(lift(Q(D*chi)))
+       return([lift(Q(D*chi)),plain_Chi,D])#you get list with modulo 
 
 
 
