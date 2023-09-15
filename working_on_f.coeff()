@@ -22,7 +22,7 @@ def rank(S,M):
               r=len(B[i].intersection(S))
       return r
 
-def mdata(M):
+def mdata(M):#here MUST include the quotient construction
        n=len( M.groundset() )
        l=['a','b'] # we define list of names
        for i in range(n):
@@ -77,7 +77,7 @@ def inter(M):#you have to give it a matroid first
                    T[i][j]=(lift(Q(p)).coefficients())[0]#if a lift is nonzero then there is only one coeff and we save it in T (otherwise it is zero which is good)
                 U[i][j]=p #here we keep track of what monomial we have
 #technically we check too high powers of b but whatever
-      return([T,U,N])
+      return([T,U,N,Q])
 
 
 def Chi(M):
