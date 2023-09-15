@@ -42,10 +42,13 @@ def Chi(M):
        R.inject_variables()
        N=2^n
        rm=len(M.basis())
+       E=M.groundset()
+       rm=len(M.basis() )
+       A=Subsets(E) #kosztowne
        
        
        
-       for i in range(c):
+       for i in range(N):
              p=1
              for j in range(n):# to trzeba sprawdzić
                    if set(str(j)).intersection(A[i])==set():
@@ -76,7 +79,7 @@ def Chi(M):
               s=(a*x)^k*(b*y)^(w-le-k)*(-y)^(le)*p*factorial(w)/(factorial(k)*factorial(w-le-k))
               D=D+s
               #print('for ',S1[i],'and a to',k, 'b to ',w-le-k, ' we get ', s )
-       #print(D)
+       print(D)
        E=g[0]*g[n+2]+g[1]*g[n+3]
        for i in range(n):
           E=E-g[2+i]*g[n+3]
