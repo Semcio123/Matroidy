@@ -1,0 +1,91 @@
+import time
+from itertools import chain, combinations
+
+def powerset(iterable):
+    s = list(iterable)
+    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+
+
+def get_matroid(n, k):
+   names = [str(i) for i in range(n)]
+   bases = powerset(names)
+   bases = [b for b in bases if len(b) == k]
+   ret = Matroid(bases)
+   return ret
+
+def rank(S,M):
+      r=0
+      B=M.bases()
+      n=len(B)
+      for i in range(n):
+          if r<len(B[i].intersection(S)):
+              r=len(B[i].intersection(S))
+      return r
+
+def mdata(M):
+       n=len( M.groundset() )
+       l=['a','b'] # we define list of names
+       for i in range(n):
+             l.append('t'+str(i))
+       l.append('x')
+       l.append('y')
+       R=PolynomialRing(QQ,names=l)
+       g=R.gens()
+       #here we can also create smaller tuple or list with only a,b and ti variables
+       return([n,R,g])
+
+def Chi(M):
+       n=mdata(M)[0]
+       R=mdata(M)[1]
+       g=mdata(M)[2]
+       chi=0
+       R.inject_variables()
+       N=2^n
+       rm=len(M.basis())
+       
+       
+       
+       for i in range(c):
+             p=1
+             for j in range(n):# to trzeba sprawdzić
+                   if set(str(j)).intersection(A[i])==set():
+                         p=p*(g[1]-g[j+2])
+                   else:
+                         p=p*(g[0]+g[j+2])
+             r=rank(A[i],M)
+             c_s=len(A[i])
+             p=p*a^(n-rm-c_s+r)*(-b)^(c_s-r)
+             #print(A[i])
+             #print(factor(p))
+             chi=chi+p
+       #print()
+       chi=chi/(a+b)
+       chi=chi.numerator()
+       w=n+rm-1
+       t=[]#just ti variables
+       for i in range(2,n+2):
+           t.append(g[i])
+       S1=Subsets(t)
+       for i in range(N):#here we create D^k manually
+           p=1#it will be a summand (monomial*multinomial coeff)
+           le=len(S1[i])
+           for j in range(le):
+              p=p*S1[i][j]
+           q=0
+           for k in range(w-le+1):
+              s=(a*x)^k*(b*y)^(w-le-k)*(-y)^(le)*p*factorial(w)/(factorial(k)*factorial(w-le-k))
+              D=D+s
+              #print('for ',S1[i],'and a to',k, 'b to ',w-le-k, ' we get ', s )
+       #print(D)
+       E=g[0]*g[n+2]+g[1]*g[n+3]
+       for i in range(n):
+          E=E-g[2+i]*g[n+3]
+       print(E)
+       if Q(E^w)==Q(D):
+          print("E^w=D")
+       chi=chi.numerator()#chi is a polynomial, but sage sees it as a rational function(we divide by a+b at some point)
+
+       return(lift(Q(D*chi)))
+
+
+
