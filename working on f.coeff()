@@ -22,19 +22,29 @@ def rank(S,M):
               r=len(B[i].intersection(S))
       return r
 
-def inter(n):
-      l=['a','b']
-      for i in range(n):
-          l.append('t'+str(i))
-      print(l)
-      R=PolynomialRing(QQ,names=l)
-      g=R.gens()
+def mdata(M):
+       n=len( M.groundset() )
+       l=['a','b'] # we define list of names
+       for i in range(n):
+             l.append('t'+str(i))
+       l.append('x')
+       l.append('y')
+       R=PolynomialRing(QQ,names=l)
+       g=R.gens()
+       #here we can also create smaller tuple or list with only a,b and ti variables
+       return([n,R,g])
+   
+
+def inter(M):#you have to give it a matroid first
+      n=mdata(M)[0]
+      R=mdata(M)[1]
+      g=mdata(M)[2]
       R.inject_variables()
       Qa=1
       Qb=1
       for i in range(n):
-          Qa=Qa*(a+g[i+2])
-          Qb=Qb*(b-g[i+2])
+          Qa=Qa*(g[0]+g[i+2])
+          Qb=Qb*(g[1]-g[i+2])
       I=ideal(Qa,Qb)
       for i in range(n):
           I=I+g[i+2]^2
@@ -42,7 +52,7 @@ def inter(n):
       Q=QuotientRing(R,I)
       t=[]
       for i in range(2,n+2):
-         t.append(g[i])
+          t.append(g[i])
       S=Subsets(t)
       N=len(S)
       T=[]
@@ -56,16 +66,17 @@ def inter(n):
       for i in range(2*n+1):
          for j in range(N):
              if 3*n-2-len(S[j])-i>-1:
-                p=a^i
-                for u in range(len(S[j])):
+                p=g[0]^i
+                for u in range(len(S[j])):#here I create a^i*prod_{u in S[j]}tu
                   p=p*S[j][u]
                  # print(S[j][u])
-                p=p*b^(3*n-2-len(S[j])-i)
-                print(p)
-                print(lift(Q(p)))
-                if lift(Q(p)).coefficients()!=[]:
-                   T[i][j]=(lift(Q(p)).coefficients())[0]
-                U[i][j]=p
+                p=p*g[1]^(3*n-2-len(S[j])-i)#I multiply everything by b to the complementary power
+                #print(p)
+                #print(lift(Q(p)))
+                if lift(Q(p)).coefficients()!=[]:#here if lift is zero the list of coefficients is empty
+                   T[i][j]=(lift(Q(p)).coefficients())[0]#if a lift is nonzero then there is only one coeff and we save it in T (otherwise it is zero which is good)
+                U[i][j]=p #here we keep track of what monomial we have
+#technically we check too high powers of b but whatever
       return([T,U,N])
 
 
@@ -76,7 +87,7 @@ def Chi(M):
        for i in range(n):
              l.append('t'+str(i))
        l.append('x')
-       l.append('y')
+       l.append('y')#this is a simple version without variables xi
        R=PolynomialRing(QQ,names=l)
        E=M.groundset()
        rm=len(M.basis() )
@@ -121,18 +132,26 @@ def Chi(M):
               D=D+s
               #print('for ',S1[i],'and a to',k, 'b to ',w-le-k, ' we get ', s )
        #print(D)
+       chi=chi.numerator()#chi is a polynomial, but sage sees it as a rational function(we divide by a+b at some point)
        return(chi*D)
 
-def reduction(f,n):#n here is as always
-   T=inter(n)[0]
+def reduction(f,M):#n here is as always
+   n=mdata(M)[0]
+   R=mdata(M)[1]
+   T=inter(M)[0]
    print(T)
-   U=inter(n)[1]
+   U=inter(M)[1]
    print(U)
-   N=inter(n)[2]
+   N=inter(M)[2]
    print(N)
    m=0
-   for i in range(2*n+1):
+   for i in range(2*n-1):#here one has to keep in mind that Q is 'smaller' than T
       for j in range(N):
         m=m+f.coefficient(U[i][j])*T[i][j]
         print(f.coefficient(U[i][j]),' ',T[i][j],' ',f.coefficient(U[i][j])*T[i][j])
-   return(m)
+   for j in range(N-1):
+       m=m+f.coefficient(U[i][j])*T[i][j]
+   for j in range(N-n-1):
+       m=m+f.coefficient(U[i][j])*T[i][j]
+   
+   return(lift(m))
