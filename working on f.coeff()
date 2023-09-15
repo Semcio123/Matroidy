@@ -1,0 +1,138 @@
+import time
+from itertools import chain, combinations
+
+def powerset(iterable):
+    s = list(iterable)
+    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+
+
+def get_matroid(n, k):
+   names = [str(i) for i in range(n)]
+   bases = powerset(names)
+   bases = [b for b in bases if len(b) == k]
+   ret = Matroid(bases)
+   return ret
+
+def rank(S,M):
+      r=0
+      B=M.bases()
+      n=len(B)
+      for i in range(n):
+          if r<len(B[i].intersection(S)):
+              r=len(B[i].intersection(S))
+      return r
+
+def inter(n):
+      l=['a','b']
+      for i in range(n):
+          l.append('t'+str(i))
+      print(l)
+      R=PolynomialRing(QQ,names=l)
+      g=R.gens()
+      R.inject_variables()
+      Qa=1
+      Qb=1
+      for i in range(n):
+          Qa=Qa*(a+g[i+2])
+          Qb=Qb*(b-g[i+2])
+      I=ideal(Qa,Qb)
+      for i in range(n):
+          I=I+g[i+2]^2
+      #print(I)
+      Q=QuotientRing(R,I)
+      t=[]
+      for i in range(2,n+2):
+         t.append(g[i])
+      S=Subsets(t)
+      N=len(S)
+      T=[]
+      U=[]
+      for i in range(2*n+1):
+         T.append([Q(0)]*N)
+      for i in range(2*n-1):
+         U.append([0]*N)
+      U.append([0]*(N-1))
+      U.append([0]*(N-n-1))
+      for i in range(2*n+1):
+         for j in range(N):
+             if 3*n-2-len(S[j])-i>-1:
+                p=a^i
+                for u in range(len(S[j])):
+                  p=p*S[j][u]
+                 # print(S[j][u])
+                p=p*b^(3*n-2-len(S[j])-i)
+                print(p)
+                print(lift(Q(p)))
+                if lift(Q(p)).coefficients()!=[]:
+                   T[i][j]=(lift(Q(p)).coefficients())[0]
+                U[i][j]=p
+      return([T,U,N])
+
+
+def Chi(M):
+    
+       n=len( M.groundset() )
+       l=['a','b'] # we define list of names
+       for i in range(n):
+             l.append('t'+str(i))
+       l.append('x')
+       l.append('y')
+       R=PolynomialRing(QQ,names=l)
+       E=M.groundset()
+       rm=len(M.basis() )
+       A=Subsets(E) #kosztowne
+       c=len(A)
+       g=R.gens()
+       chi=0
+       R.inject_variables()
+       
+       
+       
+       for i in range(c):
+             p=1
+             for j in range(n):# to trzeba sprawdzić
+                   if set(str(j)).intersection(A[i])==set():
+                         p=p*(b-g[j+2])
+                   else:
+                         p=p*(a+g[j+2])
+             r=rank(A[i],M)
+             c_s=len(A[i])
+             p=p*a^(n-rm-c_s+r)*(-b)^(c_s-r)
+             #print(A[i])
+             #print(factor(p))
+             chi=chi+p
+       print()
+       chi=chi/(a+b)
+       D=0#tutaj zaczalem zmiane
+       w=n+rm-1
+       t=[]
+       for i in range(2,n+2):
+           t.append(g[i])
+       S1=Subsets(t)
+       N=len(S1)
+       for i in range(N):
+           p=1
+           le=len(S1[i])
+           for j in range(le):
+              p=p*S1[i][j]
+           q=0
+           for k in range(w-le+1):
+              s=(a*x)^k*(b*y)^(w-le-k)*(-y)^(le)*p*factorial(w)/(factorial(k)*factorial(w-le-k))
+              D=D+s
+              #print('for ',S1[i],'and a to',k, 'b to ',w-le-k, ' we get ', s )
+       #print(D)
+       return(chi*D)
+
+def reduction(f,n):#n here is as always
+   T=inter(n)[0]
+   print(T)
+   U=inter(n)[1]
+   print(U)
+   N=inter(n)[2]
+   print(N)
+   m=0
+   for i in range(2*n+1):
+      for j in range(N):
+        m=m+f.coefficient(U[i][j])*T[i][j]
+        print(f.coefficient(U[i][j]),' ',T[i][j],' ',f.coefficient(U[i][j])*T[i][j])
+   return(m)
