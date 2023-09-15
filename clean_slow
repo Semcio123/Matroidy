@@ -69,6 +69,7 @@ def Chi(M):
        for i in range(2,n+2):
            t.append(g[i])
        S1=Subsets(t)
+       D=0
        for i in range(N):#here we create D^k manually
            p=1#it will be a summand (monomial*multinomial coeff)
            le=len(S1[i])
