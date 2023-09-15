@@ -99,6 +99,7 @@ def Chi(M):
              chi=chi+p
        print()
        chi=chi/(a+b)
+       chi=chi.numerator()
        D=0#tutaj zaczalem zmiane
        Qa=1
        Qb=1
@@ -127,4 +128,4 @@ def Chi(M):
 #              print('for ',S1[i],'and a to',k, 'b to ',w-le-k, ' we get ', s )
        H0=inter(n)[0]#values reduced mod
        H1=inter(n)[1]#values we are reducing
-       return()
+       return(lift(Q(chi*D)))
