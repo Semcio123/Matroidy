@@ -64,6 +64,16 @@ def Chi(M):
        #print()
        chi=chi/(a+b)
        chi=chi.numerator()
+       Qa=1
+       Qb=1
+       for i in range(n):
+           Qa=Qa*(g[0]+g[i+2])
+           Qb=Qb*(g[1]-g[i+2])
+       I=ideal(Qa,Qb)
+       for i in range(n):
+           I=I+g[i+2]^2
+       #print(I)
+       Q=QuotientRing(R,I)
        w=n+rm-1
        t=[]#just ti variables
        for i in range(2,n+2):
