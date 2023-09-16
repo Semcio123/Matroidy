@@ -1,0 +1,162 @@
+import time
+from itertools import chain, combinations
+
+def powerset(iterable):
+    s = list(iterable)
+    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+
+
+def get_matroid(n, k):
+   names = [str(i) for i in range(n)]
+   bases = powerset(names)
+   bases = [b for b in bases if len(b) == k]
+   ret = Matroid(bases)
+   return ret
+
+def rank(S,M):
+      r=0
+      B=M.bases()
+      n=len(B)
+      for i in range(n):
+          if r<len(B[i].intersection(S)):
+              r=len(B[i].intersection(S))
+      return r
+
+def mdata(M):#here MUST include the quotient construction
+       n=len( M.groundset() )
+       l=['a','b'] # we define list of names
+       for i in range(n):
+             l.append('t'+str(i))
+       l.append('x')
+       l.append('y')
+       R=PolynomialRing(QQ,names=l)
+       g=R.gens()
+       #here we can also create smaller tuple or list with only a,b and ti variables
+       Qa=1
+       Qb=1
+       for i in range(n):
+           Qa=Qa*(g[0]+g[i+2])
+           Qb=Qb*(g[1]-g[i+2])
+       I=ideal(Qa,Qb)
+       for i in range(n):
+           I=I+g[i+2]^2
+       #print(I)
+       Q=QuotientRing(R,I)
+       return([n,R,g,Q])
+   
+
+def inter(M):#you have to give it a matroid first
+      n=mdata(M)[0]
+      R=mdata(M)[1]
+      g=mdata(M)[2]
+      R.inject_variables()
+      t=[]
+      for i in range(2,n+2):
+          t.append(g[i])
+      S=Subsets(t)
+      N=len(S)
+      T=[]
+      U=[]
+      Q=mdata(M)[3]
+      for i in range(2*n+1):
+         T.append([Q(0)]*N)
+      for i in range(2*n-1):
+         U.append([0]*N)
+      U.append([0]*(N-1))
+      U.append([0]*(N-n-1))
+      for i in range(2*n+1):
+         for j in range(N):
+             if 3*n-2-len(S[j])-i>-1:
+                p=g[0]^i
+                for u in range(len(S[j])):#here I create a^i*prod_{u in S[j]}tu
+                  p=p*S[j][u]
+                 # print(S[j][u])
+                p=p*g[1]^(3*n-2-len(S[j])-i)#I multiply everything by b to the complementary power
+                #print(p)
+                #print(lift(Q(p)))
+                if lift(Q(p)).coefficients()!=[]:#here if lift is zero the list of coefficients is empty
+                   T[i][j]=(lift(Q(p)).coefficients())[0]#if a lift is nonzero then there is only one coeff and we save it in T (otherwise it is zero which is good)
+                U[i][j]=p #here we keep track of what monomial we have
+#technically we check too high powers of b but whatever
+      return([T,U,N,Q])
+
+
+def Chi(M):
+    
+       n=len( M.groundset() )
+       l=['a','b'] # we define list of names
+       for i in range(n):
+             l.append('t'+str(i))
+       l.append('x')
+       l.append('y')#this is a simple version without variables xi
+       R=PolynomialRing(QQ,names=l)
+       E=M.groundset()
+       rm=len(M.basis() )
+       A=Subsets(E) #kosztowne
+       c=len(A)
+       g=R.gens()
+       chi=0
+       R.inject_variables()
+       
+       
+       
+       for i in range(c):
+             p=1
+             for j in range(n):# to trzeba sprawdzić
+                   if set(str(j)).intersection(A[i])==set():
+                         p=p*(b-g[j+2])
+                   else:
+                         p=p*(a+g[j+2])
+             r=rank(A[i],M)
+             c_s=len(A[i])
+             p=p*a^(n-rm-c_s+r)*(-b)^(c_s-r)
+             #print(A[i])
+             #print(factor(p))
+             chi=chi+p
+       print()
+       chi=chi/(a+b)
+       D=0#tutaj zaczalem zmiane
+       w=n+rm-1
+       t=[]
+       for i in range(2,n+2):
+           t.append(g[i])
+       S1=Subsets(t)
+       N=len(S1)
+       for i in range(N):
+           p=1
+           le=len(S1[i])
+           for j in range(le):
+              p=p*S1[i][j]
+           q=0
+           for k in range(w-le+1):
+              s=(a*x)^k*(b*y)^(w-le-k)*(-y)^(le)*p*factorial(w)/(factorial(k)*factorial(w-le-k))
+              D=D+s
+              #print('for ',S1[i],'and a to',k, 'b to ',w-le-k, ' we get ', s )
+       #print(D)
+       chi=chi.numerator()#chi is a polynomial, but sage sees it as a rational function(we divide by a+b at some point)
+       return(chi*D)
+
+def reduction(f,M):#n here is as always
+   Q=mdata(M)[3]
+   n=mdata(M)[0]
+   R=mdata(M)[1]
+   T=inter(M)[0]
+   print(T)
+   U=inter(M)[1]
+   print(U)
+   N=inter(M)[2]
+   #print(N)
+   m=0
+   for i in range(2*n-1):#here one has to keep in mind that Q is 'smaller' than T
+      for j in range(N):
+        m=m+f.coefficient(U[i][j])*T[i][j]
+        print(f.coefficient(U[i][j]),' ',T[i][j],' ',f.coefficient(U[i][j])*T[i][j])
+   for j in range(N-1):
+       m=m+f.coefficient(U[i][j])*T[i][j]
+   for j in range(N-n-1):
+       m=m+f.coefficient(U[i][j])*T[i][j]
+   print(f)
+   print()
+   print(lift(Q(f)))
+   
+   return(m)
