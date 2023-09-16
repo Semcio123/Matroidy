@@ -155,7 +155,7 @@ def reduction(f,M):#n here is as always
        m=m+f.coefficient(U[i][j])*T[i][j]
    for j in range(N-n-1):
        m=m+f.coefficient(U[i][j])*T[i][j]
-   print(f)
+   print(factor(f))
    print()
    print(lift(Q(f)))
    
