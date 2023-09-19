@@ -97,8 +97,9 @@ def Chi(M):
        #print(E)
        if Q(E^w)==Q(D):
           print("E^w=D")
+       result=lift(Q(D*chi))
 
-       return([lift(Q(D*chi)),chi,D])#you get list with modulo 
+       return([Factorization(result)[n+2][0],result,chi,D])#you get list with modulo 
 
 
 
