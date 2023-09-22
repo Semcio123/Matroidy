@@ -22,7 +22,7 @@ def rank(S,M):
               r=len(B[i].intersection(S))
       return r
 
-def mdata(M):#here MUST include the quotient construction
+def mdata(M):
        n=len( M.groundset() )
        l=['a','b'] # we define list of names
        for i in range(n):
@@ -45,7 +45,7 @@ def mdata(M):#here MUST include the quotient construction
        return([n,R,g,Q])
    
 
-def inter(M):#you have to give it a matroid first
+def inter(M):#you have to give it a matroid, could be an integer instead. Monomials here all have the same top degree. We can create new table (or modify this one) so that it also contains monomials of smaller degree and we can reduce each factor chi*D separetely
       n=mdata(M)[0]
       R=mdata(M)[1]
       g=mdata(M)[2]
@@ -55,8 +55,8 @@ def inter(M):#you have to give it a matroid first
           t.append(g[i])
       S=Subsets(t)
       N=len(S)
-      T=[]
-      U=[]
+      T=[]#this will be a table with lifts of reduced monomials
+      U=[]#this will be a table with monomials we are reducing
       Q=mdata(M)[3]
       for i in range(2*n+1):
          T.append([Q(0)]*N)
@@ -74,7 +74,7 @@ def inter(M):#you have to give it a matroid first
                 p=p*g[1]^(3*n-2-len(S[j])-i)#I multiply everything by b to the complementary power
                 #print(p)
                 #print(lift(Q(p)))
-                if lift(Q(p)).coefficients()!=[]:#here if lift is zero the list of coefficients is empty
+                if lift(Q(p)).coefficients()!=[]:#here if lift is zero the list of coefficients is empty, we don't want this, we keep the zeros from the beggining in such case
                    T[i][j]=(lift(Q(p)).coefficients())[0]#if a lift is nonzero then there is only one coeff and we save it in T (otherwise it is zero which is good)
                 U[i][j]=p #here we keep track of what monomial we have
 #technically we check too high powers of b but whatever
@@ -88,7 +88,7 @@ def Chi(M):
        for i in range(n):
              l.append('t'+str(i))
        l.append('x')
-       l.append('y')#this is a simple version without variables xi
+       l.append('y')#this is a simple version without variables 'xi'
        R=PolynomialRing(QQ,names=l)
        E=M.groundset()
        rm=len(M.basis() )
@@ -102,7 +102,7 @@ def Chi(M):
        
        for i in range(c):
              p=1
-             for j in range(n):# to trzeba sprawdzić
+             for j in range(n):
                    if set(str(j)).intersection(A[i])==set():
                          p=p*(b-g[j+2])
                    else:
@@ -115,7 +115,7 @@ def Chi(M):
              chi=chi+p
        print()
        chi=chi/(a+b)
-       D=0#tutaj zaczalem zmiane
+       D=0#this will be D^w in the previous notation, we create it manually using binomial theorem
        w=n+rm-1
        t=[]
        for i in range(2,n+2):
@@ -133,10 +133,10 @@ def Chi(M):
               D=D+s
               #print('for ',S1[i],'and a to',k, 'b to ',w-le-k, ' we get ', s )
        #print(D)
-       chi=chi.numerator()#chi is a polynomial, but sage sees it as a rational function(we divide by a+b at some point)
-       return(chi*D)
+       chi=chi.numerator()#chi is a polynomial, but sage sees it as a rational function (we divide by a+b at some point)
+       return(chi*D)# we could reduce chi and D and then reduce it modulo using a bigger table
 
-def reduction(f,M):#n here is as always
+def reduction(f,M):#n here is as always. here we just read all coefficients of f and reduce them. If you have many polynomials and one ring this approach should be fast: you create table once and then reduce all polynomials
    n=mdata(M)[0]
    R=mdata(M)[1]
    T=inter(M)[0]
@@ -146,7 +146,7 @@ def reduction(f,M):#n here is as always
    N=inter(M)[2]
    print(N)
    m=0
-   for i in range(2*n-1):#here one has to keep in mind that Q is 'smaller' than T
+   for i in range(2*n-1):#here one has to keep in mind that Q is not a rectangular table
       for j in range(N):
         m=m+f.coefficient(U[i][j])*T[i][j]
         print(f.coefficient(U[i][j]),' ',T[i][j],' ',f.coefficient(U[i][j])*T[i][j])
