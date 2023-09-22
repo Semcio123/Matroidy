@@ -22,7 +22,7 @@ def rank(S,M):
               r=len(B[i].intersection(S))
       return r
 
-def mdata(M):
+def mdata(M):#here we have some easy data of a matroid M
        n=len( M.groundset() )
        l=['a','b'] # we define list of names
        for i in range(n):
@@ -38,33 +38,32 @@ def Chi(M):
        n=mdata(M)[0]
        R=mdata(M)[1]
        g=mdata(M)[2]
-       chi=0
+       chi=0# this is polynomial G_M from the paper
        R.inject_variables()
        N=2^n
-       rm=len(M.basis())
+       rm=len(M.basis())#this is rank of M
        E=M.groundset()
-       rm=len(M.basis() )
-       A=Subsets(E) #kosztowne
+       A=Subsets(E)
        
        
        
        for i in range(N):
-             p=1
-             for j in range(n):# to trzeba sprawdzić
+             p=1#it will be a factor depending only on a subset S of E
+             for j in range(n):
                    if set(str(j)).intersection(A[i])==set():
                          p=p*(g[1]-g[j+2])
                    else:
                          p=p*(g[0]+g[j+2])
              r=rank(A[i],M)
              c_s=len(A[i])
-             p=p*a^(n-rm-c_s+r)*(-b)^(c_s-r)
+             p=p*a^(n-rm-c_s+r)*(-b)^(c_s-r)#this is a factor depending on M involving only alpha and beta
              #print(A[i])
              #print(factor(p))
              chi=chi+p
        #print()
-       chi=chi/(a+b)
-       chi=chi.numerator()#sage sees it as rational function, we are changing type to a polynomial
-       Qa=1
+       chi=chi/(a+b)#finally formula says we have to divide by (alpha + beta)
+       chi=chi.numerator()#sage sees chi as a rational function, we are changing type to a polynomial one
+       Qa=1#those are generators of an ideal given by a projective bundle formula. we are working with product of two projective spaces with usual and inverse action
        Qb=1
        for i in range(n):
            Qa=Qa*(g[0]+g[i+2])
@@ -73,14 +72,14 @@ def Chi(M):
        for i in range(n):
            I=I+g[i+2]^2
        #print(I)
-       Q=QuotientRing(R,I)
+       Q=QuotientRing(R,I)#actually it can be moved to mdata(-)...
        w=n+rm-1
        t=[]#just ti variables
        for i in range(2,n+2):
            t.append(g[i])
        S1=Subsets(t)
        D=0
-       for i in range(N):#here we create D^k manually
+       for i in range(N):#here we create D^k manually using binomial formula
            p=1#it will be a summand (monomial*multinomial coeff)
            le=len(S1[i])
            for j in range(le):
@@ -95,11 +94,11 @@ def Chi(M):
        for i in range(n):
           E=E-g[2+i]*g[n+3]
        #print(E)
-       if Q(E^w)==Q(D):
-          print("E^w=D")
-       result=lift(Q(D)*Q(chi))
+       #if Q(E^w)==Q(D):#seems to work fine
+       #   print("E^w=D")
+       result=lift(Q(D)*Q(chi))#I hope it does it in an efficient way? first reducing every factor then multiplyin (and reducing) and then lift so that we get a nice polynomial in the end
 
-       return([result,chi,D])#here I tried to get rid of the trivial factor in "result"
+       return([result,chi,D])#here I tried to get rid of the trivial factor in the "result" sometimes it works and sometimes it returns an error
 
 
 
